@@ -47,7 +47,7 @@ export default class Main extends Component {
     this.setState({ loading: true });
     try {
       const isRepeated = repositories.filter(
-        repositorie => repositorie.name === newRepo
+        repository => repository.name === newRepo
       );
 
       if (isRepeated) {

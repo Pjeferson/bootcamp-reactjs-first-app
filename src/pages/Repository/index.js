@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 
-import { Loading, Owner, IssueList } from './styles';
+import { Loading, Owner, IssueList, FilterList } from './styles';
 
 import Container from '../../components/Container';
 
@@ -14,11 +14,14 @@ export default class Repository extends Component {
       repository: {},
       issues: [],
       loading: true,
+      filters: [{ state: 'all' }, { state: 'open' }, { state: 'closed' }],
+      filterIndex: 0,
     };
   }
 
   async componentDidMount() {
     const { match } = this.props;
+    const { filters, filterIndex } = this.state;
 
     const repoName = decodeURIComponent(match.params.repository);
 
@@ -26,7 +29,7 @@ export default class Repository extends Component {
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: 'open',
+          state: filters[filterIndex].state,
           per_page: 5,
         },
       }),
@@ -39,8 +42,27 @@ export default class Repository extends Component {
     });
   }
 
+  loadIssues = async () => {
+    const { filters, filterIndex, repository } = this.state;
+
+    const issues = await api.get(`/repos/${repository.full_name}/issues`, {
+      params: {
+        state: filters[filterIndex].state,
+        per_page: 5,
+      },
+    });
+
+    this.setState({ issues: issues.data });
+  };
+
+  handleFilterClick = index => {
+    this.setState({ filterIndex: index });
+
+    this.loadIssues();
+  };
+
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, filters, filterIndex } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>;
@@ -54,6 +76,18 @@ export default class Repository extends Component {
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
         </Owner>
+
+        <FilterList active={filterIndex}>
+          {filters.map((filter, index) => (
+            <button
+              type="button"
+              key={filter.state}
+              onClick={() => this.handleFilterClick(index)}
+            >
+              {filter.state}
+            </button>
+          ))}
+        </FilterList>
 
         <IssueList>
           {issues.map(issue => (
