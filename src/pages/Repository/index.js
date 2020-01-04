@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-
-// import { Container } from './styles';
-
+import PropTypes from 'prop-types';
 import api from '../../services/api';
+
+import { Loading } from './styles';
+
+import Container from '../../components/Container';
 
 export default class Repository extends Component {
   constructor() {
@@ -10,7 +12,7 @@ export default class Repository extends Component {
     this.state = {
       repository: {},
       issues: [],
-      loading: false,
+      loading: true,
     };
   }
 
@@ -38,7 +40,12 @@ export default class Repository extends Component {
 
   render() {
     const { repository, issues, loading } = this.state;
-    return <h1>Repository: </h1>;
+
+    if (loading) {
+      return <Loading>Carregando</Loading>;
+    }
+
+    return <Container></Container>;
   }
 }
 
