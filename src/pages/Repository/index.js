@@ -41,3 +41,11 @@ export default class Repository extends Component {
     return <h1>Repository: </h1>;
   }
 }
+
+Repository.propTypes = {
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      repository: PropTypes.string,
+    }),
+  }).isRequired,
+};
