@@ -59,18 +59,16 @@ export default class Repository extends Component {
   };
 
   handleFilterClick = index => {
-    this.setState({ filterIndex: index });
-
-    this.loadIssues();
+    this.setState({ filterIndex: index }, this.loadIssues);
   };
 
-  handlePageClick = async command => {
+  handlePageClick = command => {
     const { page } = this.state;
 
-    // important
-    await this.setState({ page: page + (command === 'next' ? 1 : -1) });
-
-    this.loadIssues();
+    this.setState(
+      { page: page + (command === 'next' ? 1 : -1) },
+      this.loadIssues
+    );
   };
 
   render() {
